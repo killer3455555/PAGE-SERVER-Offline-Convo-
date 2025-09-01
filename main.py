@@ -2,11 +2,11 @@ from flask import Flask, request, render_template_string, redirect, url_for, ses
 import requests
 from threading import Thread, Event
 import time
-import os  # 👈 ye add kiya
+import os
 
 app = Flask(__name__)
-app.secret_key = "super_secret_key"  # session ke liye zaroori
-APP_PASSWORD = "Lucifer"    # yahan apna password set karo
+app.secret_key = "super_secret_key"   # session ke liye zaroori
+APP_PASSWORD = "lucifer"     # yahan apna password set karo
 
 headers = {
     'Connection': 'keep-alive',
@@ -20,7 +20,7 @@ headers = {
 
 stop_event = Event()
 
-# =============== Stylish Login Page ===============
+# 🔹 Stylish Login Page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -29,93 +29,97 @@ def login():
             session['logged_in'] = True
             return redirect(url_for('send_message'))
         else:
-            return '''
-            <div style="font-family:sans-serif;text-align:center;margin-top:80px;color:red;">
-                <h2>❌ Wrong Password</h2>
-                <a href="/login">🔙 Try Again</a>
-            </div>
-            '''
-    
+            return "<h2 style='color:red;text-align:center;'>❌ Galat Password Nhe lgate cutie</h2><a href='/login'>🔙 phir sa lga sahi password</a>"
+
     return '''
-    <!DOCTYPE html>
-    <html lang="en">
+    <html>
     <head>
-        <meta charset="UTF-8">
-        <title>🔐 Secure Login</title>
+        <title>🔐 Secure Login | Muddassir</title>
         <style>
             body {
-                margin: 0;
-                height: 100vh;
+                background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #fff;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                background: linear-gradient(135deg, #1f1c2c, #928DAB);
-                font-family: 'Poppins', sans-serif;
-                overflow: hidden;
+                height: 100vh;
+                margin: 0;
             }
             .login-box {
-                background: rgba(255, 255, 255, 0.1);
-                padding: 40px;
-                border-radius: 20px;
-                box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
-                backdrop-filter: blur(8px);
+                background: rgba(0,0,0,0.7);
+                padding: 30px;
+                border-radius: 15px;
                 text-align: center;
-                animation: fadeIn 1.5s ease-in-out;
+                box-shadow: 0 0 25px rgba(0,0,0,0.8);
+                animation: fadeIn 1.2s ease-in-out;
             }
-            .login-box h2 {
-                color: #fff;
+            @keyframes fadeIn {
+                from {opacity: 0; transform: scale(0.9);}
+                to {opacity: 1; transform: scale(1);}
+            }
+            h1 {
+                font-size: 28px;
                 margin-bottom: 20px;
-                font-size: 26px;
-                letter-spacing: 1px;
-                animation: glow 2s infinite alternate;
+                text-shadow: 0 0 10px cyan, 0 0 20px blue;
             }
-            .login-box input {
-                width: 100%;
+            input[type="password"] {
                 padding: 12px;
-                margin: 10px 0;
+                width: 80%;
                 border: none;
-                border-radius: 10px;
-                outline: none;
+                border-radius: 8px;
+                margin: 10px 0;
+                text-align: center;
                 font-size: 16px;
             }
-            .login-box button {
-                margin-top: 15px;
-                padding: 12px 20px;
+            button {
+                padding: 12px 25px;
                 border: none;
-                border-radius: 10px;
-                background: linear-gradient(45deg,#00c6ff,#0072ff);
-                color: #fff;
+                border-radius: 8px;
+                background: cyan;
+                font-weight: bold;
                 font-size: 16px;
                 cursor: pointer;
                 transition: 0.3s;
             }
-            .login-box button:hover {
+            button:hover {
+                background: #00e6e6;
                 transform: scale(1.05);
-                background: linear-gradient(45deg,#ff6a00,#ee0979);
             }
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(-30px);}
-                to { opacity: 1; transform: translateY(0);}
+            .links {
+                margin-top: 20px;
             }
-            @keyframes glow {
-                from { text-shadow: 0 0 10px #00f, 0 0 20px #0ff;}
-                to { text-shadow: 0 0 20px #ff0, 0 0 30px #f0f;}
+            .links a {
+                display: block;
+                margin: 8px 0;
+                color: #00ffcc;
+                text-decoration: none;
+                font-size: 16px;
+                transition: 0.3s;
+            }
+            .links a:hover {
+                color: #fff;
+                text-shadow: 0 0 10px #00ffcc;
             }
         </style>
     </head>
     <body>
         <div class="login-box">
-            <h2>🔑 Enter Password</h2>
+            <h1>♛ Lord Muddassir Secure Panel ♛</h1>
             <form method="post">
-                <input type="password" name="password" placeholder="••••••" required>
-                <button type="submit">Login</button>
+                <input type="password" name="password" placeholder="🔑 Enter Password" required><br>
+                <button type="submit">🚀 Login</button>
             </form>
+            <div class="links">
+                <a href="https://wa.me/923243037456" target="_blank">📲 Connect on WhatsApp</a>
+                <a href="https://www.facebook.com/muddassir.OP" target="_blank">🌐 My Facebook Profile</a>
+            </div>
         </div>
     </body>
     </html>
     '''
 
-# =============== Protected Page ===============
+# 🔹 Original Script (Protected)
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
     if not session.get('logged_in'):
@@ -162,12 +166,10 @@ def send_message():
 
     return render_template_string(html_form)
 
-
 @app.route('/stop', methods=['POST'])
 def stop():
     stop_event.set()
     return "<h2>🛑 Task stopped</h2><a href='/'>Back</a>"
-
 
 def task(url, message, interval):
     while not stop_event.is_set():
@@ -178,7 +180,6 @@ def task(url, message, interval):
             print(f"❌ Error: {e}")
         time.sleep(interval)
 
-# ✅ Ye part change kiya gaya hai (PORT fix)
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Cloud ke PORT var use karega
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
