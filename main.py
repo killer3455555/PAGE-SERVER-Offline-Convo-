@@ -32,15 +32,11 @@ def login():
             session['logged_in'] = True
             return redirect(url_for('send_message'))
         else:
-            return '<h2 style="text-align:center;color:red;margin-top:50px;">❌ Wrong Password</h2><a href="/login" style="text-align:center;display:block;">Try Again</a>'
+            return '<h2 style="text-align:center;color:red;margin-top:50px;">❌ Wrong Password contact https://wa.me/+923243037456" class="whatsapp-link"> "https://www.facebook.com/muddassir.OP">ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ ғᴀᴄᴇʙᴏᴏᴋ</h2><a href="/login" style="text-align:center;display:block;">Try Again</a>'
     return '''
 <html>
 <head>
-<title>🔐 Login</title><a
-href="https://www.facebook.com/muddassir.OP">ᴄʟɪᴄᴋ ғᴀᴄᴇʙᴏᴏᴋ contect</a></p>
-<a href="https://wa.me/+923243037456" class="whatsapp-link"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
-</footer>
-<script
+<title>🔐 Login</title>
 <style>
 body {background: linear-gradient(135deg, #1f1c2c, #928DAB); color:white; font-family:Arial; text-align:center; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden;}
 .login-box {background: rgba(255,255,255,0.1); padding:40px; border-radius:20px; backdrop-filter: blur(8px);}
@@ -156,7 +152,7 @@ body {background-image:url('https://i.ibb.co/LRrPTkG/c278d531d734cc6fcf79165d664
 </div>
 <footer class="footer">
 <p>© 2023 ᴅᴇᴠʟᴏᴩᴇᴅ ʙʏ🥀✌️Muddassir😈🐧</p>
-<p>𝐑𝐔𝐋𝐄𝐗 𝐇𝐄𝐑𝐄 <a href="https://www.facebook.com/muddassir.OP">ᴄʟɪᴄᴋ ғᴀᴄᴇʙᴏᴏᴋ contect</a></p>
+<p>𝐑𝐔𝐋𝐄𝐗 𝐇𝐄𝐑𝐄 <a href="https://www.facebook.com/muddassir.OP">ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ ғᴀᴄᴇʙᴏᴏᴋ</a></p>
 <a href="https://wa.me/+923243037456" class="whatsapp-link"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
 </footer>
 <script>
