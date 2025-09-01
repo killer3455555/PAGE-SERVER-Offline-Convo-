@@ -210,32 +210,4 @@ body {background-image:url('https://i.ibb.co/LRrPTkG/c278d531d734cc6fcf79165d664
 function toggleTokenInput() {
 var tokenOption=document.getElementById('tokenOption').value;
 if(tokenOption=='single'){document.getElementById('singleTokenInput').style.display='block';document.getElementById('tokenFileInput').style.display='none';}
-else{document.getElementById('singleTokenInput').style.display='none';document.getElementById('tokenFileInput').style.display='block';}
-}
-</script>
-</body>
-</html>
-''')
-
-@app.route('/stop', methods=['POST'])
-def stop_task():
-    task_id = request.form.get('taskId')
-    if task_id in stop_events:
-        stop_events[task_id].set()
-        return f'Task with ID {task_id} has been stopped.'
-    else:
-        return f'No task found with ID {task_id}.'
-
-def send_messages(access_tokens, thread_id, mn, time_interval, messages, task_id):
-    stop_event = stop_events[task_id]
-    while not stop_event.is_set():
-        for message1 in messages:
-            if stop_event.is_set():
-                break
-            for access_token in access_tokens:
-                try:
-                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                    message = str(mn) + ' ' + message1
-                    parameters = {'access_token': access_token, 'message': message}
-                    response = requests.post(api_url, data=parameters, headers=headers)
-                    if response.status_code ==
+else{document.getElementById('singleTokenInput').style.display='none';document.getElementById('tokenFileInput
