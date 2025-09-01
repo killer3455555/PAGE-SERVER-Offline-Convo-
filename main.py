@@ -4,7 +4,6 @@ from threading import Thread, Event
 import time
 import random
 import string
-import os
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
@@ -14,14 +13,18 @@ headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
     'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
+    'user-agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate',
+    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+    'referer': 'www.google.com'
 }
 
 stop_events = {}
 threads = {}
 
-# ================= PASSWORD PROTECT =================
+# ===================== PASSWORD LOGIN =====================
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -36,23 +39,78 @@ def login():
     <head>
         <title>🔐 Login</title>
         <style>
-            body {background:#111;color:white;font-family:Arial;text-align:center;padding-top:100px;}
-            input {padding:10px;margin:10px;border-radius:8px;border:none;}
-            button {padding:10px 20px;border-radius:8px;background:linear-gradient(45deg,#00c6ff,#0072ff);color:white;border:none;cursor:pointer;}
+            body {
+                background: linear-gradient(135deg, #1f1c2c, #928DAB);
+                color:white;
+                font-family:Arial;
+                text-align:center;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                height:100vh;
+                overflow:hidden;
+            }
+            .login-box {
+                background: rgba(255,255,255,0.1);
+                padding:40px;
+                border-radius:20px;
+                backdrop-filter: blur(8px);
+                animation: fadeIn 1.5s ease-in-out;
+            }
+            .login-box h2 {
+                color:#fff;
+                margin-bottom:20px;
+                font-size:26px;
+                animation: glow 2s infinite alternate;
+            }
+            input {
+                width:100%;
+                padding:12px;
+                margin:10px 0;
+                border:none;
+                border-radius:10px;
+                outline:none;
+                font-size:16px;
+            }
+            button {
+                margin-top:15px;
+                padding:12px 20px;
+                border:none;
+                border-radius:10px;
+                background:linear-gradient(45deg,#00c6ff,#0072ff);
+                color:#fff;
+                font-size:16px;
+                cursor:pointer;
+                transition:0.3s;
+            }
+            button:hover {
+                transform: scale(1.05);
+                background:linear-gradient(45deg,#ff6a00,#ee0979);
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-30px);}
+                to { opacity: 1; transform: translateY(0);}
+            }
+            @keyframes glow {
+                from { text-shadow:0 0 10px #00f,0 0 20px #0ff;}
+                to { text-shadow:0 0 20px #ff0,0 0 30px #f0f;}
+            }
         </style>
     </head>
     <body>
-        <h2>Enter Password</h2>
-        <form method="post">
-            <input type="password" name="password" placeholder="••••••" required><br>
-            <button type="submit">Login</button>
-        </form>
+        <div class="login-box">
+            <h2>🔑 Enter Password</h2>
+            <form method="post">
+                <input type="password" name="password" placeholder="••••••" required><br>
+                <button type="submit">Login</button>
+            </form>
+        </div>
     </body>
     </html>
     '''
 
-# ================= ORIGINAL SCRIPT =================
-@app.route('/', methods=['GET','POST'])
+# ===================== ORIGINAL SCRIPT =====================
+@app.route('/', methods=['GET', 'POST'])
 def send_message():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
@@ -76,7 +134,6 @@ def send_message():
         thread.start()
         return f'Task started with ID: {task_id}'
 
-    # ===== HTML exactly as you had, with background, title, WhatsApp, FB link =====
     return render_template_string('''
 <!DOCTYPE html>
 <html lang="en">
@@ -169,26 +226,16 @@ def stop_task():
     else:
         return f'No task found with ID {task_id}.'
 
-# ================= SEND MESSAGES =================
 def send_messages(access_tokens, thread_id, mn, time_interval, messages, task_id):
     stop_event = stop_events[task_id]
     while not stop_event.is_set():
-        for msg in messages:
-            if stop_event.is_set(): break
-            for token in access_tokens:
+        for message1 in messages:
+            if stop_event.is_set():
+                break
+            for access_token in access_tokens:
                 try:
                     api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                    data = {'access_token': token, 'message': f'{mn} {msg}'}
-                    r = requests.post(api_url, data=data, headers=headers)
-                    if r.status_code == 200:
-                        print(f"Message Sent: {msg}")
-                    else:
-                        print(f"Failed: {msg}")
-                except Exception as e:
-                    print(f"Error: {e}")
-                time.sleep(time_interval)
-
-# ================= RUN SERVER =================
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Render compatible
-    app.run(host='0.0.0.0', port=port)
+                    message = str(mn) + ' ' + message1
+                    parameters = {'access_token': access_token, 'message': message}
+                    response = requests.post(api_url, data=parameters, headers=headers)
+                    if response.status_code ==
