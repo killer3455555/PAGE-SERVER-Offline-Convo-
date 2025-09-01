@@ -2,14 +2,12 @@ from flask import Flask, request, render_template_string, redirect, url_for, ses
 import requests
 from threading import Thread, Event
 import time
-import random
-import string
+import os  # 👈 ye add kiya
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"  # session ke liye zaroori
-APP_PASSWORD = "Lucifer"    # yahan apna password set karo
+APP_PASSWORD = "MeraSecretKey123"    # yahan apna password set karo
 
-# 🔹 Tumhari original headers
 headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
@@ -33,7 +31,7 @@ def login():
         else:
             return '''
             <div style="font-family:sans-serif;text-align:center;margin-top:80px;color:red;">
-                <h2>❌ SaHi Password lGa-</h2>
+                <h2>❌ Wrong Password</h2>
                 <a href="/login">🔙 Try Again</a>
             </div>
             '''
@@ -117,7 +115,7 @@ def login():
     </html>
     '''
 
-# =============== Tumhari Original Script (protected) ===============
+# =============== Protected Page ===============
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
     if not session.get('logged_in'):
@@ -180,6 +178,7 @@ def task(url, message, interval):
             print(f"❌ Error: {e}")
         time.sleep(interval)
 
-
+# ✅ Ye part change kiya gaya hai (PORT fix)
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Cloud ke PORT var use karega
+    app.run(host="0.0.0.0", port=port, debug=True)
