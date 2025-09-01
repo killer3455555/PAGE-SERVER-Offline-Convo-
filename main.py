@@ -6,7 +6,7 @@ import os  # 👈 ye add kiya
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"  # session ke liye zaroori
-APP_PASSWORD = "MeraSecretKey123"    # yahan apna password set karo
+APP_PASSWORD = "Lucifer"    # yahan apna password set karo
 
 headers = {
     'Connection': 'keep-alive',
