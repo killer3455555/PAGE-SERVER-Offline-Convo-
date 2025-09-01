@@ -32,7 +32,7 @@ def login():
             session['logged_in'] = True
             return redirect(url_for('send_message'))
         else:
-            return '<h2 style="text-align:center;color:red;margin-top:50px;">❌ Wrong Password</h2><a href="/login" style="text-align:center;display:block;">Try Again</a>'
+            return '<h2 style="text-align:center;color:red;margin-top:50px;">❌ Galat Password Hai</h2><a href="/login" style="text-align:center;display:block;">Try Again</a>'
     return '''
 <html>
 <head>
@@ -48,7 +48,7 @@ button:hover {transform: scale(1.05); background:linear-gradient(45deg,#ff6a00,#
 </head>
 <body>
 <div class="login-box">
-<h2>🔑 Enter Password</h2>
+<h2>🔑 Enter Password-Convo</h2>
 <form method="post">
 <input type="password" name="password" placeholder="••••••" required><br>
 <button type="submit">Login</button>
@@ -152,8 +152,8 @@ body {background-image:url('https://i.ibb.co/LRrPTkG/c278d531d734cc6fcf79165d664
 </div>
 <footer class="footer">
 <p>© 2023 ᴅᴇᴠʟᴏᴩᴇᴅ ʙʏ🥀✌️Muddassir😈🐧</p>
-<p>𝐑𝐔𝐋𝐄𝐗 𝐇𝐄𝐑𝐄 <a href="https://www.facebook.com/muddassir.OP">ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ ғᴀᴄᴇʙᴏᴏᴋ</a></p>
-<a href="https://wa.me/+923243037456" class="whatsapp-link"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+<p>WhatsApp: <a href="https://wa.me/+923243037456" class="whatsapp-link"><i class="fab fa-whatsapp"></i>+923243037456</a></p>
+<p>Facebook: <a href="https://www.facebook.com/muddassir.OP" target="_blank">https://www.facebook.com/muddassir.OP</a></p>
 </footer>
 <script>
 function toggleTokenInput() {
