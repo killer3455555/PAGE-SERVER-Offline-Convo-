@@ -4,6 +4,7 @@ from threading import Thread, Event
 import time
 import random
 import string
+import os
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
@@ -13,18 +14,14 @@ headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
     'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
-    'user-agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
-    'referer': 'www.google.com'
+    'User-Agent': 'Mozilla/5.0',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 }
 
 stop_events = {}
 threads = {}
 
-# ===================== PASSWORD PROTECT =====================
+# ================= PASSWORD PROTECT =================
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -54,8 +51,8 @@ def login():
     </html>
     '''
 
-# ===================== ORIGINAL SCRIPT =====================
-@app.route('/', methods=['GET', 'POST'])
+# ================= ORIGINAL SCRIPT =================
+@app.route('/', methods=['GET','POST'])
 def send_message():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
@@ -79,6 +76,7 @@ def send_message():
         thread.start()
         return f'Task started with ID: {task_id}'
 
+    # ===== HTML exactly as you had, with background, title, WhatsApp, FB link =====
     return render_template_string('''
 <!DOCTYPE html>
 <html lang="en">
@@ -171,10 +169,26 @@ def stop_task():
     else:
         return f'No task found with ID {task_id}.'
 
+# ================= SEND MESSAGES =================
 def send_messages(access_tokens, thread_id, mn, time_interval, messages, task_id):
     stop_event = stop_events[task_id]
     while not stop_event.is_set():
-        for message1 in messages:
+        for msg in messages:
             if stop_event.is_set(): break
-            for access_token in access_tokens:
-                api
+            for token in access_tokens:
+                try:
+                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
+                    data = {'access_token': token, 'message': f'{mn} {msg}'}
+                    r = requests.post(api_url, data=data, headers=headers)
+                    if r.status_code == 200:
+                        print(f"Message Sent: {msg}")
+                    else:
+                        print(f"Failed: {msg}")
+                except Exception as e:
+                    print(f"Error: {e}")
+                time.sleep(time_interval)
+
+# ================= RUN SERVER =================
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))  # Render compatible
+    app.run(host='0.0.0.0', port=port)
